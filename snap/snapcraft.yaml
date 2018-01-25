@@ -1,0 +1,43 @@
+name: cakeshop
+version: 'master'
+summary: An integrated development environment and SDK for Ethereum-like ledgers
+description: |
+  Cakeshop is a set of tools and APIs for working with Ethereum-like ledgers,
+  packaged as a Java web application archive (WAR) that gets you up and running
+  in under 60 seconds.
+
+grade: stable
+confinement: strict
+
+apps:
+  cakeshop:
+    command: cakeshop-wrapper
+    plugs:
+        - network
+        - network-bind
+        - hardware-observe
+ 
+parts:
+  cakeshop:
+    plugin: nil
+    build: |
+      curl -Lo cakeshop.war https://github.com/jpmorganchase/cakeshop/releases/download/v0.10.0-pre.2/cakeshop-0.10.0-x86_64-linux.war
+      chmod +x cakeshop.war
+    build-packages:
+      - ca-certificates
+      - ca-certificates-java
+    stage-packages:
+      - openjdk-8-jdk-headless
+      - ca-certificates-java
+    install: |
+      mv cakeshop.war $SNAPCRAFT_PART_INSTALL/cakeshop.war
+      cp ../../../snap/cakeshop-wrapper $SNAPCRAFT_PART_INSTALL
+      cp ../../../snap/application.properties.template $SNAPCRAFT_PART_INSTALL
+      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/ssl/certs/java
+      cp /etc/ssl/certs/java/cacerts $SNAPCRAFT_PART_INSTALL/etc/ssl/certs/java
+    stage:
+      - cakeshop.war
+      - cakeshop-wrapper
+      - application.properties.template
+      - usr
+      - etc

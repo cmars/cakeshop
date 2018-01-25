@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -euo pipefail
+
+export ETH_CONFIG=$SNAP_USER_COMMON
+cd $SNAP_USER_COMMON
+
+if [ ! -e $SNAP_USER_COMMON/local/application.properties ]; then
+	mkdir -p $SNAP_USER_COMMON/local
+	sed 's,%%SNAP_USER_COMMON%%,'"$SNAP_USER_COMMON"',g' ${SNAP}/application.properties.template > ${SNAP_USER_COMMON}/local/application.properties
+fi
+
+exec $SNAP/usr/lib/jvm/java-8-openjdk-amd64/bin/java -jar $SNAP/cakeshop.war "$@"
